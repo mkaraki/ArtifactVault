@@ -18,6 +18,12 @@ if (isset($_FILES['file'])) {
         die('Invalid required fields');
     }
 
+    // Check tmp file exists
+    if (!file_exists($_FILES['file']['tmp_name'])) {
+        http_response_code(400);
+        die('Invalid file');
+    }
+
     // Calc file hash
     $file_hash_sha256 = strtolower(hash_file('sha256', $_FILES['file']['tmp_name']));
 
