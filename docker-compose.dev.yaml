@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/var/www
+      - ./wwwroot:/var/www/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+      - s3
+
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: artifact
+      POSTGRES_PASSWORD: artifact
+      POSTGRES_DB: artifact
+    volumes:
+      - ./docker_dev/db:/var/lib/postgresql/data
+      - ./db.init:/docker-entrypoint-initdb.d
+
+  s3:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_REGION: us-east-1
+      MINIO_ACCESS_KEY: artifact
+      MINIO_SECRET_KEY: artifact
+    volumes:
+      - ./docker_dev/s3:/data
+    command: server /data --console-address :9001
