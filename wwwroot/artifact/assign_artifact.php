@@ -46,13 +46,13 @@ switch ($_POST['link_type']) {
         break;
     case 'dependency':
         if ($unlink)
-            $result = pg_query_params($db, "DELETE FROM artifact_dependency_map WHERE artifact_id = $1 AND dependent_artifact_id = $2", array($_POST['aid'], $_POST['link_id']));
+            $result = pg_query_params($db, "DELETE FROM artifact_dependency_map WHERE artifact_id = $1 AND dependent_artifact_id = $2", array($_POST['link_id'], $_POST['aid']));
         else
-            $result = pg_query_params($db, "INSERT INTO artifact_dependency_map (artifact_id, dependent_artifact_id, is_optional) VALUES ($1, $2, false)", array($_POST['aid'], $_POST['link_id']));
+            $result = pg_query_params($db, "INSERT INTO artifact_dependency_map (artifact_id, dependent_artifact_id, is_optional) VALUES ($1, $2, false)", array($_POST['link_id'], $_POST['aid']));
         break;
     case 'dependent':
         if ($unlink)
-            $result = pg_query_params($db, "DELETE FROM artifact_dependency_map WHERE artifact_id = $1 AND dependent_artifact_id = $2", array($_POST['link_id'], $_POST['aid']));
+            $result = pg_query_params($db, "DELETE FROM artifact_dependency_map WHERE artifact_id = $1 AND dependent_artifact_id = $2", array($_POST['aid'], $_POST['link_id']));
         else
             $result = pg_query_params($db, "INSERT INTO artifact_dependency_map (artifact_id, dependent_artifact_id, is_optional) VALUES ($1, $2, false)", array($_POST['aid'], $_POST['link_id']));
         break;
