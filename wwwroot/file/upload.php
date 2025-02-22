@@ -184,11 +184,37 @@ $artifact_data = $artifact_data[0];
                 <textarea id="description" name="description"></textarea>
             </div>
             <div>
-                <label for="file_hash_sha256">SHA256</label>
-            </div>
-            <div>
-                <input type="text" id="file_hash_sha256" name="file_hash_sha256" required>
-                <button type="button" onclick="calc_sha256()">Calc</button>
+                <div>
+                    <label for="file_hash_crc32">CRC32</label>
+                </div>
+                <div>
+                    <input type="text" id="file_hash_crc32" name="file_hash_crc32">
+                </div>
+                <div>
+                    <label for="file_hash_md5">MD5</label>
+                </div>
+                <div>
+                    <input type="text" id="file_hash_md5" name="file_hash_md5">
+                </div>
+                <div>
+                    <label for="file_hash_sha1">SHA1</label>
+                </div>
+                <div>
+                    <input type="text" id="file_hash_sha1" name="file_hash_sha1">
+                </div>
+                <div>
+                    <label for="file_hash_sha256">SHA256</label>
+                </div>
+                <div>
+                    <input type="text" id="file_hash_sha256" name="file_hash_sha256">
+                    <button type="button" onclick="calc_sha256()">Calc</button>
+                </div>
+                <div>
+                    <label for="file_hash_sha512">SHA512</label>
+                </div>
+                <div>
+                    <input type="text" id="file_hash_sha512" name="file_hash_sha512">
+                </div>
             </div>
             <div>
                 <input type="hidden" name="artifact_id" value="<?= $_GET['id'] ?>">
