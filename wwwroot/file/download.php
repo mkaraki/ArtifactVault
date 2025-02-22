@@ -41,10 +41,40 @@ $object = $s3_client->getObject([
 ]);
 
 // Validate hash
-$hash_sha256 = hash('sha256', $object['Body']);
-if ($hash_sha256 !== $file['file_hash_sha256']) {
-    http_response_code(500);
-    die('File hash mismatch. File may be tampered/corrupted');
+if (!empty($file['file_hash_md5'])) {
+    $hash = hash('md5', $object['Body']);
+    if ($hash !== bin2hex(pg_unescape_bytea($file['file_hash_md5']))) {
+        http_response_code(500);
+        die('File hash mismatch. file may be tampered/corrupted');
+    }
+}
+else if (!empty($file['file_hash_sha1'])) {
+    $hash = hash('sha1', $object['Body']);
+    if ($hash !== bin2hex(pg_unescape_bytea($file['file_hash_sha1']))) {
+        http_response_code(500);
+        die('File hash mismatch. file may be tampered/corrupted');
+    }
+}
+else if (!empty($file['file_hash_sha256'])) {
+    $hash = hash('sha256', $object['Body']);
+    if ($hash !== bin2hex(pg_unescape_bytea($file['file_hash_sha256']))) {
+        http_response_code(500);
+        die('File hash mismatch. file may be tampered/corrupted');
+    }
+}
+else if (!empty($file['file_hash_sha512'])) {
+    $hash = hash('sha512', $object['Body']);
+    if ($hash !== bin2hex(pg_unescape_bytea($file['file_hash_sha512']))) {
+        http_response_code(500);
+        die('File hash mismatch. file may be tampered/corrupted');
+    }
+}
+else if (!empty($file['file_hash_crc32'])) {
+    $hash = hash_file('crc32b', $object['Body']);
+    if ($hash !== bin2hex(pg_unescape_bytea($file['file_hash_crc32']))) {
+        http_response_code(500);
+        die('File hash mismatch. file may be tampered/corrupted');
+    }
 }
 
 header('Content-Disposition: attachment; filename="' . $file['file_name'] . '"');

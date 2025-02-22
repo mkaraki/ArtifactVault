@@ -51,8 +51,26 @@ db_close($link);
 <dl>
     <dt>Size</dt>
     <dd><?= number_format($data['file_size']) ?> Bytes</dd>
-    <dt>SHA256</dt>
-    <dd><?= escape(pg_unescape_bytea($data['file_hash_sha256'])) ?></dd>
+    <?php if ($data['file_hash_crc32'] !== null) : ?>
+        <dt>CRC32</dt>
+        <dd><?= bin2hex(pg_unescape_bytea($data['file_hash_crc32'])) ?></dd>
+    <?php endif; ?>
+    <?php if ($data['file_hash_md5'] !== null) : ?>
+        <dt>MD5</dt>
+        <dd><?= bin2hex(pg_unescape_bytea($data['file_hash_md5'])) ?></dd>
+    <?php endif; ?>
+    <?php if ($data['file_hash_sha1'] !== null) : ?>
+        <dt>SHA1</dt>
+        <dd><?= bin2hex(pg_unescape_bytea($data['file_hash_sha1'])) ?></dd>
+    <?php endif; ?>
+    <?php if ($data['file_hash_sha256'] !== null) : ?>
+        <dt>SHA256</dt>
+        <dd><?= bin2hex(pg_unescape_bytea($data['file_hash_sha256'])) ?></dd>
+    <?php endif; ?>
+    <?php if ($data['file_hash_sha512'] !== null) : ?>
+        <dt>SHA512</dt>
+        <dd><?= bin2hex(pg_unescape_bytea($data['file_hash_sha512'])) ?></dd>
+    <?php endif; ?>
 </dl>
 
 <section>

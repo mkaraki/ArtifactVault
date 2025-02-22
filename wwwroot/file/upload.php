@@ -4,16 +4,62 @@ if (isset($_FILES['file'])) {
     // Upload process
 
     if (!isset($_POST['artifact_id']) || !is_numeric($_POST['artifact_id']) ||
-        empty($_POST['file_name']) || !isset($_POST['description']) || empty($_POST['file_hash_sha256'])) {
+        empty($_POST['file_name']) || !isset($_POST['description'])) {
         http_response_code(400);
         die('Missing required fields');
     }
 
     $file_name = trim($_POST['file_name']);
     $description = trim($_POST['description']);
-    $file_hash_sha256_user_calc = strtolower(trim($_POST['file_hash_sha256']));
 
-    if (empty($file_name) || empty($file_hash_sha256_user_calc)) {
+    $file_hash_crc32_user_calc = null;
+    $file_hash_md5_user_calc = null;
+    $file_hash_sha1_user_calc = null;
+    $file_hash_sha256_user_calc = null;
+    $file_hash_sha512_user_calc = null;
+
+    switch (true) {
+        case !empty($_POST['md5']) && preg_match('/^[0-9a-f]{32}$/i', $_POST['md5']) !== 1:
+            $file_hash_md5_user_calc = strtolower(trim($_POST['md5']));
+            if ($file_hash_md5_user_calc !== strtolower(hash_file('md5', $_FILES['file']['tmp_name']))) {
+                http_response_code(400);
+                die('Invalid file hash');
+            }
+            break;
+        case !empty($_POST['sha1']) && preg_match('/^[0-9a-f]{40}$/i', $_POST['sha1']) !== 1:
+            $file_hash_sha1_user_calc = strtolower(trim($_POST['sha1']));
+            if ($file_hash_sha1_user_calc !== strtolower(hash_file('sha1', $_FILES['file']['tmp_name']))) {
+                http_response_code(400);
+                die('Invalid file hash');
+            }
+            break;
+        case !empty($_POST['file_hash_sha256']) && preg_match('/^[0-9a-f]{64}$/i', $_POST['file_hash_sha256']) !== 1:
+            $file_hash_sha256_user_calc = strtolower(trim($_POST['file_hash_sha256']));
+            if ($file_hash_sha256_user_calc !== strtolower(hash_file('sha256', $_FILES['file']['tmp_name']))) {
+                http_response_code(400);
+                die('Invalid file hash');
+            }
+            break;
+        case !empty($_POST['file_hash_sha512']) && preg_match('/^[0-9a-f]{128}$/i', $_POST['file_hash_sha512']) !== 1:
+            $file_hash_sha512_user_calc = strtolower(trim($_POST['file_hash_sha512']));
+            if ($file_hash_sha512_user_calc !== strtolower(hash_file('sha512', $_FILES['file']['tmp_name']))) {
+                http_response_code(400);
+                die('Invalid file hash');
+            }
+            break;
+        case !empty($_POST['file_hash_crc32']) && preg_match('/^[0-9a-f]{8}$/i', $_POST['file_hash_crc32']) !== 1:
+            $file_hash_crc32_user_calc = strtolower(trim($_POST['file_hash_crc32']));
+            if ($file_hash_crc32_user_calc !== strtolower(hash_file('crc32b', $_FILES['file']['tmp_name']))) {
+                http_response_code(400);
+                die('Invalid file hash');
+            }
+            break;
+        default:
+            http_response_code(400);
+            die('Missing/Invalid required fields. Hash is required');
+    }
+
+    if (empty($file_name)) {
         http_response_code(400);
         die('Invalid required fields');
     }
@@ -22,14 +68,6 @@ if (isset($_FILES['file'])) {
     if (!file_exists($_FILES['file']['tmp_name'])) {
         http_response_code(400);
         die('Invalid file');
-    }
-
-    // Calc file hash
-    $file_hash_sha256 = strtolower(hash_file('sha256', $_FILES['file']['tmp_name']));
-
-    if ($file_hash_sha256 !== $file_hash_sha256_user_calc) {
-        http_response_code(400);
-        die('Invalid file hash. File may be tampered/corrupted');
     }
 
     // Check file size is match
@@ -43,9 +81,12 @@ if (isset($_FILES['file'])) {
 
     $link = db_open();
 
-    $query = "INSERT INTO file (file_name, file_size, file_hash_sha256, description)
-              VALUES ($1, $2, $3, $4) RETURNING id";
-    $result = pg_query_params($link, $query, array($file_name, $file_size, $file_hash_sha256, $description));
+    $query = "INSERT INTO file (file_name, file_size, description,
+                    file_hash_crc32, file_hash_md5, file_hash_sha1, file_hash_sha256, file_hash_sha512)
+              VALUES ($1, $2, $3) RETURNING id";
+    $result = pg_query_params($link, $query, array($file_name, $file_size, $description,
+        $file_hash_crc32_user_calc, $file_hash_md5_user_calc, $file_hash_sha1_user_calc,
+        $file_hash_sha256_user_calc, $file_hash_sha512_user_calc));
     if (!$result) {
         http_response_code(500);
         die('Could not register file');
