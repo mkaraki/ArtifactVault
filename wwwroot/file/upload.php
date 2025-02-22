@@ -19,35 +19,35 @@ if (isset($_FILES['file'])) {
     $file_hash_sha512_user_calc = null;
 
     switch (true) {
-        case !empty($_POST['file_hash_md5']) && preg_match('/^[0-9a-f]{32}$/i', $_POST['file_hash_md5']) !== 1:
+        case !empty($_POST['file_hash_md5']) && preg_match('/^[0-9a-f]{32}$/i', $_POST['file_hash_md5']) === 1:
             $file_hash_md5_user_calc = strtolower(trim($_POST['file_hash_md5']));
             if ($file_hash_md5_user_calc !== strtolower(hash_file('md5', $_FILES['file']['tmp_name']))) {
                 http_response_code(400);
                 die('Invalid file hash');
             }
             break;
-        case !empty($_POST['file_hash_sha1']) && preg_match('/^[0-9a-f]{40}$/i', $_POST['file_hash_sha1']) !== 1:
+        case !empty($_POST['file_hash_sha1']) && preg_match('/^[0-9a-f]{40}$/i', $_POST['file_hash_sha1']) === 1:
             $file_hash_sha1_user_calc = strtolower(trim($_POST['file_hash_sha1']));
             if ($file_hash_sha1_user_calc !== strtolower(hash_file('sha1', $_FILES['file']['tmp_name']))) {
                 http_response_code(400);
                 die('Invalid file hash');
             }
             break;
-        case !empty($_POST['file_hash_sha256']) && preg_match('/^[0-9a-f]{64}$/i', $_POST['file_hash_sha256']) !== 1:
+        case !empty($_POST['file_hash_sha256']) && preg_match('/^[0-9a-f]{64}$/i', $_POST['file_hash_sha256']) === 1:
             $file_hash_sha256_user_calc = strtolower(trim($_POST['file_hash_sha256']));
             if ($file_hash_sha256_user_calc !== strtolower(hash_file('sha256', $_FILES['file']['tmp_name']))) {
                 http_response_code(400);
                 die('Invalid file hash');
             }
             break;
-        case !empty($_POST['file_hash_sha512']) && preg_match('/^[0-9a-f]{128}$/i', $_POST['file_hash_sha512']) !== 1:
+        case !empty($_POST['file_hash_sha512']) && preg_match('/^[0-9a-f]{128}$/i', $_POST['file_hash_sha512']) === 1:
             $file_hash_sha512_user_calc = strtolower(trim($_POST['file_hash_sha512']));
             if ($file_hash_sha512_user_calc !== strtolower(hash_file('sha512', $_FILES['file']['tmp_name']))) {
                 http_response_code(400);
                 die('Invalid file hash');
             }
             break;
-        case !empty($_POST['file_hash_crc32']) && preg_match('/^[0-9a-f]{8}$/i', $_POST['file_hash_crc32']) !== 1:
+        case !empty($_POST['file_hash_crc32']) && preg_match('/^[0-9a-f]{8}$/i', $_POST['file_hash_crc32']) === 1:
             $file_hash_crc32_user_calc = strtolower(trim($_POST['file_hash_crc32']));
             if ($file_hash_crc32_user_calc !== strtolower(hash_file('crc32b', $_FILES['file']['tmp_name']))) {
                 http_response_code(400);
