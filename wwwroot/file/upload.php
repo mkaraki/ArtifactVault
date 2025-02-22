@@ -18,6 +18,10 @@ if (isset($_FILES['file'])) {
     $file_hash_sha256_user_calc = null;
     $file_hash_sha512_user_calc = null;
 
+    require_once __DIR__ . '/../../init.php';
+
+    $link = db_open();
+
     switch (true) {
         case !empty($_POST['file_hash_md5']) && preg_match('/^[0-9a-f]{32}$/i', $_POST['file_hash_md5']) === 1:
             $file_hash_md5_user_calc = strtolower(trim($_POST['file_hash_md5']));
@@ -25,6 +29,7 @@ if (isset($_FILES['file'])) {
                 http_response_code(400);
                 die('Invalid file hash');
             }
+            $file_hash_md5_user_calc = pg_escape_bytea($link, hex2bin($file_hash_md5_user_calc));
             break;
         case !empty($_POST['file_hash_sha1']) && preg_match('/^[0-9a-f]{40}$/i', $_POST['file_hash_sha1']) === 1:
             $file_hash_sha1_user_calc = strtolower(trim($_POST['file_hash_sha1']));
@@ -32,6 +37,7 @@ if (isset($_FILES['file'])) {
                 http_response_code(400);
                 die('Invalid file hash');
             }
+            $file_hash_sha1_user_calc = pg_escape_bytea($link, hex2bin($file_hash_sha1_user_calc));
             break;
         case !empty($_POST['file_hash_sha256']) && preg_match('/^[0-9a-f]{64}$/i', $_POST['file_hash_sha256']) === 1:
             $file_hash_sha256_user_calc = strtolower(trim($_POST['file_hash_sha256']));
@@ -39,6 +45,7 @@ if (isset($_FILES['file'])) {
                 http_response_code(400);
                 die('Invalid file hash');
             }
+            $file_hash_sha256_user_calc = pg_escape_bytea($link, hex2bin($file_hash_sha256_user_calc));
             break;
         case !empty($_POST['file_hash_sha512']) && preg_match('/^[0-9a-f]{128}$/i', $_POST['file_hash_sha512']) === 1:
             $file_hash_sha512_user_calc = strtolower(trim($_POST['file_hash_sha512']));
@@ -46,6 +53,7 @@ if (isset($_FILES['file'])) {
                 http_response_code(400);
                 die('Invalid file hash');
             }
+            $file_hash_sha512_user_calc = pg_escape_bytea($link, hex2bin($file_hash_sha512_user_calc));
             break;
         case !empty($_POST['file_hash_crc32']) && preg_match('/^[0-9a-f]{8}$/i', $_POST['file_hash_crc32']) === 1:
             $file_hash_crc32_user_calc = strtolower(trim($_POST['file_hash_crc32']));
@@ -53,6 +61,7 @@ if (isset($_FILES['file'])) {
                 http_response_code(400);
                 die('Invalid file hash');
             }
+            $file_hash_crc32_user_calc = pg_escape_bytea($link, hex2bin($file_hash_crc32_user_calc));
             break;
         default:
             http_response_code(400);
@@ -76,10 +85,6 @@ if (isset($_FILES['file'])) {
         die('File size mismatch in internal process');
     }
     $file_size = $_FILES['file']['size'];
-
-    require_once __DIR__ . '/../../init.php';
-
-    $link = db_open();
 
     $query = "INSERT INTO file (file_name, file_size, description,
                     file_hash_crc32, file_hash_md5, file_hash_sha1, file_hash_sha256, file_hash_sha512)
