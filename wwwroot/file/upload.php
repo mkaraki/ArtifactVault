@@ -88,7 +88,7 @@ if (isset($_FILES['file'])) {
 
     $query = "INSERT INTO file (file_name, file_size, description,
                     file_hash_crc32, file_hash_md5, file_hash_sha1, file_hash_sha256, file_hash_sha512)
-              VALUES ($1, $2, $3) RETURNING id";
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id";
     $result = pg_query_params($link, $query, array($file_name, $file_size, $description,
         $file_hash_crc32_user_calc, $file_hash_md5_user_calc, $file_hash_sha1_user_calc,
         $file_hash_sha256_user_calc, $file_hash_sha512_user_calc));
